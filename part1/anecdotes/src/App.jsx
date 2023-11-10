@@ -24,6 +24,10 @@ const App = () => {
     setPoints(pointsCopy);
   }
 
+  function mostVotedAnecdote() {
+    return anecdotes[points.indexOf(Math.max(...points))]
+  }
+
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -40,12 +44,17 @@ const App = () => {
 
   return (
     <div>
+      <h1>Anecdote of the Day</h1>
       <p>{anecdotes[selected]}</p>
-     <p>has {points[selected]} votes</p>
-     <p>
-      <Button handleClick={incrementVote} text='vote' />
-      <Button handleClick={getAnecdote} text='next anecdote' />
-    </p>
+      <p>has {points[selected]} votes</p>
+      <p>
+        <Button handleClick={incrementVote} text='vote' />
+        <Button handleClick={getAnecdote} text='next anecdote' />
+      </p>
+
+      <h1>Anecdote with Most Votes</h1>
+      <p>{mostVotedAnecdote()}</p>
+      <p>has {Math.max(...points)} votes</p>
     </div>
   )
 }
