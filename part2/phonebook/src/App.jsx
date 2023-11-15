@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import SearchBar from './components/SearchBar'
 import { Persons } from './components/Persons';
 import { PersonForm } from './components/PersonForm';
-import axios from 'axios'
+import phoneService from './services/phoneService'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,11 +12,10 @@ const App = () => {
   const [searchPersons, setNewSearchPersons] = useState([]);
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data);
-        setNewSearchPersons(response.data)
+    phoneService.getAll()
+      .then(people => {
+        setPersons(people);
+        setNewSearchPersons(people);
       });
   }, []);
 
@@ -39,21 +38,54 @@ const App = () => {
     }
   }
 
+  const deleteName = (id) => {
+    const targetInd = persons.findIndex(person => person.id === id);
+    if (window.confirm(`Delete ${persons[targetInd].name}?`)) {
+      phoneService.remove(id)
+        .then(response => {
+          if (response.status === 200) {
+            const newPersons = persons.toSpliced(targetInd, 1);
+            setPersons(newPersons);
+            setNewSearchPersons(newPersons);
+          }
+        })
+    }
+  }
+
+  const updatePerson = (name, phone) => {
+    const index = persons.findIndex(person => person.name === name);
+    const id = persons[index].id;
+    phoneService.update(id, { name, phone }).
+      then(response => {
+        if (response.status === 200) {
+          const newPersons = persons.toSpliced(index, 1, response.data);
+          setPersons(newPersons);
+          setNewSearchPersons(newPersons);
+          setNewName('');
+          setNewPhone('');
+        }
+      });
+  }
+
   const addName = (event) => {
     event.preventDefault();
 
     if (persons.some(person => person.name === newName)) {
-      alert(`${newName} already exists in the phonebook`);
-      return;
+      const message =`${newName} already exists in the phonebook, would you like to update their phone number?`;
+      if (confirm(message)) {
+        updatePerson(newName, newPhone);
+      }
+    } else {
+      phoneService.create({name: newName, phone: newPhone})
+        .then(person => {
+          const newPersons = [...persons];
+          newPersons.push(person);
+          setPersons(newPersons);
+          setNewSearchPersons(newPersons);
+          setNewName('');
+          setNewPhone('');
+        })
     }
-
-    const personsCopy = [...persons];
-    personsCopy.push({name: newName, phone: newPhone, id: persons.length + 1});
-
-    setPersons(personsCopy);
-    setNewSearchPersons(personsCopy)
-    setNewName('');
-    setNewPhone('');
   }
 
   return (
@@ -72,7 +104,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons persons={ searchPersons }/>
+      <Persons persons={ searchPersons } deleteName={ deleteName }/>
     </div>
   )
 }
