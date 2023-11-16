@@ -46,7 +46,7 @@ const App = () => {
     if (window.confirm(`Delete ${persons[targetInd].name}?`)) {
       phoneService.remove(id)
         .then(response => {
-          if (response.status === 200) {
+          if (response.status === 204) {
             const newPersons = persons.toSpliced(targetInd, 1);
             setPersons(newPersons);
             setNewSearchPersons(newPersons);
@@ -63,11 +63,11 @@ const App = () => {
     }
   }
 
-  const updatePerson = (name, phone) => {
+  const updatePerson = (name, number) => {
     const index = persons.findIndex(person => person.name === name);
     const id = persons[index].id;
     const person = persons[targetInd];
-    phoneService.update(id, { name, phone }).
+    phoneService.update(id, { name, number }).
       then(response => {
         if (response.status === 200) {
           const newPersons = persons.toSpliced(index, 1, response.data);
@@ -104,15 +104,20 @@ const App = () => {
         updatePerson(newName, newPhone);
       }
     } else {
-      phoneService.create({name: newName, phone: newPhone})
+      phoneService.create({name: newName, number: newPhone})
         .then(person => {
-          const newPersons = [...persons];
-          newPersons.push(person);
-          setPersons(newPersons);
-          setNewSearchPersons(newPersons);
-          setNewName('');
-          setNewPhone('');
-          flashNotification(`${newName} has been added to the list`)
+          if (!person.name) {
+            console.error(person)
+            flashNotification('Please enter a name and number', true);
+          } else {
+            const newPersons = [...persons];
+            newPersons.push(person);
+            setPersons(newPersons);
+            setNewSearchPersons(newPersons);
+            setNewName('');
+            setNewPhone('');
+            flashNotification(`${newName} has been added to the list`)
+          }
         })
     }
   }

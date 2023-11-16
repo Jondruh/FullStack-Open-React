@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 
+app.use(cors());
 app.use(express.json());
+app.use(express.static('dist'));
 
 let notes = [
   {
@@ -44,6 +47,15 @@ app.get('/api/notes/:id', (request, response) => {
   }
 });
 
+app.put('/api/notes/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const body = request.body;
+
+  notes.splice(id, 1, body);
+
+  response.json(body)
+});
+
 app.post('/api/notes', (request, response) => {
   const body = request.body;
 
@@ -75,7 +87,7 @@ app.get('/api/notes', (request, response) => {
   response.json(notes);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3001/persons';
+const baseUrl = '/api/persons';
 
 const getAll = () => {
   return axios
@@ -17,7 +17,7 @@ const create = (newPerson) => {
     .then(response => {
       return response.data;
     })
-    .catch(error => `There was a problem creating a entry: ${error}`);
+    .catch(error => `There was a problem creating the entry: ${error}`);
 }
 
 const remove = (personId) => {

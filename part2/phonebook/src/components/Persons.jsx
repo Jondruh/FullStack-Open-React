@@ -3,7 +3,7 @@ export const Persons = ({ persons, deleteName }) => {
     <div>
       {persons.map(person => {
         return (
-          <p key={person.id}>{person.name} {person.phone}
+          <p key={person.id}>{person.name} {person.number}
           <button onClick={() => deleteName(person.id)} type="button">delete</button>
           </p> 
         )
