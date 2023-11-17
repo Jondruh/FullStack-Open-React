@@ -1,4 +1,4 @@
-DELETE http://localhost:3001/api/notes/2
+DELETE http://localhost:3001/api/notes/65578d15602a6dae54dc16d2
 
 ###
 
@@ -6,9 +6,12 @@ POST http://localhost:3001/api/notes
 content-type: application/json
 
 {
-  "content": "REST Client is good at testing backends",
+  "content": "lol",
   "important": true
 }
 
 ###
 GET http://localhost:3001/api/notes  
+
+###
+GET http://localhost:3001/api/notes/6557828044f8af22e1d66f93
